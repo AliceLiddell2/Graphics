@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-#include "graphics\GlIncl.h"
+#include "graphics\Common.h"
 
 #include <Eigen/Dense>
 

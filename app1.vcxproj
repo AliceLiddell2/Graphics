@@ -20,7 +20,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -79,14 +79,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics\0.h" />
+    <ClInclude Include="graphics\Box.h" />
+    <ClInclude Include="graphics\Color.h" />
+    <ClInclude Include="graphics\Common.h" />
+    <ClInclude Include="graphics\Disk.h" />
+    <ClInclude Include="graphics\ElementBase.h" />
     <ClInclude Include="graphics\Elements.h" />
+    <ClInclude Include="graphics\Exception.h" />
     <ClInclude Include="graphics\GlIncl.h" />
     <ClInclude Include="graphics\Group.h" />
     <ClInclude Include="graphics\IElement.h" />
+    <ClInclude Include="graphics\ImageLoader.h" />
     <ClInclude Include="graphics\IModel.h" />
     <ClInclude Include="graphics\IScene.h" />
     <ClInclude Include="graphics\Model.h" />
+    <ClInclude Include="graphics\QuadSet.h" />
     <ClInclude Include="graphics\Scene.h" />
+    <ClInclude Include="graphics\SimplePlane.h" />
+    <ClInclude Include="graphics\Sphere.h" />
+    <ClInclude Include="graphics\Surface.h" />
+    <ClInclude Include="graphics\Texture.h" />
+    <ClInclude Include="graphics\TriangleSet.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tgaload.h" />

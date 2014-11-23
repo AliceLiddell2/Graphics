@@ -33,7 +33,7 @@ namespace MyGL
 
 		virtual Color& SurfaceColor() { return color; } 
 
-		virtual bool& IsAMirror() {} // default stub 
+		virtual bool& IsAMirror() { return isAMirror; } 
 
 		virtual Plane ReflectionPlane() { ThrowException("Reflection plane is undefined for this object"); } 
 
