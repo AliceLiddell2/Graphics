@@ -41,14 +41,14 @@ namespace MyGL
 			input.open(filename, ifstream::binary);
 			if (input.fail())
 			{
-				ThrowException(string("Could not find file: ") + filiname);
+				ThrowException(string("Could not find file: ") + filename);
 			}
 			//
 			char buffer[2];
 			input.read(buffer, 2);
 			if (!(buffer[0] == 'B' && buffer[1] == 'M'))
 			{
-				ThrowException(string("Not a bitmap file: ") + filiname);
+				ThrowException(string("Not a bitmap file: ") + filename);
 			}
 			input.ignore(8);
 			int dataOffset = readInt(input);
@@ -68,11 +68,11 @@ namespace MyGL
 					input.ignore(2);
 					if (readShort(input) != 24)
 					{
-						ThrowException(string("Image is not 24 bits per pixel: ") + filiname);
+						ThrowException(string("Image is not 24 bits per pixel: ") + filename);
 					}
 					if (readShort(input) != 0)
 					{
-						ThrowException(string("Image is compressed: ") + filiname);
+						ThrowException(string("Image is compressed: ") + filename);
 					}
 					break;
 				}
@@ -84,24 +84,24 @@ namespace MyGL
 					input.ignore(2);
 					if (readShort(input) != 24)
 					{
-						ThrowException(string("Image is not 24 bits per pixel: ") + filiname);
+						ThrowException(string("Image is not 24 bits per pixel: ") + filename);
 					}
 					break;
 				}
 			case 64:
 					// OS/2 V2
-					ThrowException(string("OS/2 V2 bitmaps are not supported: ") + filiname);
+					ThrowException(string("OS/2 V2 bitmaps are not supported: ") + filename);
 					break; // never reached 
 			case 108:
 					// Windows V4
-					ThrowException(string("Windows V4 bitmaps are not supported: ") + filiname);
+					ThrowException(string("Windows V4 bitmaps are not supported: ") + filename);
 					break;
 			case 124:
 					//Windows V5
-					ThrowException(string("Windows V5 bitmaps are not supported: ") + filiname);
+					ThrowException(string("Windows V5 bitmaps are not supported: ") + filename);
 					break;
 			default:
-					ThrowException(string("Unknown bitmap format: ") + filiname);
+					ThrowException(string("Unknown bitmap format: ") + filename);
 			}
 			//
 			// Reading the data
@@ -150,7 +150,7 @@ namespace MyGL
 	
 		/// Converts a two-character array to a short, using little-endian form
 		///
-		short toShort(const char* bytes) 
+		inline static short toShort(const char* bytes) 
 		{
 			return (short)(
 				((unsigned char)bytes[1] << 8) |
@@ -160,7 +160,7 @@ namespace MyGL
 	
 		/// Reads the next four bytes as an integer, using little-endian form
 		///
-		int readInt(ifstream &input) 
+		inline static int readInt(ifstream &input) 
 		{
 			char buffer[4];
 			input.read(buffer, 4);
@@ -169,7 +169,7 @@ namespace MyGL
 	
 		/// Reads the next two bytes as a short, using little-endian form
 		///
-		short readShort(ifstream &input) 
+		inline static short readShort(ifstream &input) 
 		{
 			char buffer[2];
 			input.read(buffer, 2);
@@ -197,7 +197,7 @@ namespace MyGL
 				aarray.isReleased = true;
 			}
 
-			inline static _clear_array()
+			inline void _clear_array()
 			{
 				if ((!isReleased) && (array != NULL)) 
 				{

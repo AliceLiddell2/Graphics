@@ -16,9 +16,19 @@ namespace MyGL
 		ElementContainer elements;
 
 	public:
-		void Draw() // final 
+		// content
+
+		inline Group& Add(IElement* element)
 		{
-			for (ElementContainer::iterator it = elements.begin(); it != elements.end(); ++it)
+			elements.push_back(element);
+			return *this;
+		}
+
+		//drawing
+
+		void Draw() const // final 
+		{
+			for (ElementContainer::const_iterator it = elements.begin(); it != elements.end(); ++it)
 			{
 				IElement* element = *it; 
 				if (element) element->Draw(); 

@@ -30,3 +30,8 @@
 using namespace std;
 using namespace Eigen;
 
+// ----
+// Common math definitions
+
+typedef Vector4d Plane; 
+

@@ -13,7 +13,13 @@ namespace MyGL
 		Vector4d color;
 
 	public:
-		Color(double red, double green, double blue) : color(red, green, blue, NONTRANSPARENT_ALPHA) 
+		explicit Color(
+			double red, 
+			double green, 
+			double blue, 
+			double alpha=NONTRANSPARENT_ALPHA
+			) 
+			: color(red, green, blue, alpha) 
 		{
 		}
 
@@ -29,7 +35,12 @@ namespace MyGL
 
 		Color(const Color& other)
 		{
-			*this = color; 
+			*this = other; 
+		}
+
+		inline static Color White() 
+		{
+			return Color(1, 1, 1); 
 		}
 
 		// ----

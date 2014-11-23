@@ -1,6 +1,9 @@
 
 #pragma once
 
+#include "graphics\Common.h"
+#include "graphics\Color.h"
+
 namespace MyGL
 {
 	/// Interface for elementary or compound object 
@@ -8,9 +11,17 @@ namespace MyGL
 	class IElement
 	{
 	public:
-		virtual void Draw() =0; 
+		// Drawing
 
-		virtual bool IsAMirror() =0; 
+		virtual void Draw() const =0; 
+
+		// Surface properties
+
+		virtual Color& SurfaceColor() =0;
+
+		virtual bool& IsAMirror() =0; 
+
+		virtual Plane ReflectionPlane() =0;
 	};
 
 } // namespace MyGL
