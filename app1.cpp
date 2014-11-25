@@ -59,28 +59,7 @@ void keyboard ( unsigned char key, int x, int y )  // Create Keyboard Function
 
 void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (required for arrow keys)
 {
-  switch ( a_keys ) {
-    case GLUT_KEY_UP:     // When Up Arrow Is Pressed...
-      xspeed-=0.01f;
-      break;
-    case GLUT_KEY_DOWN:               // When Down Arrow Is Pressed...
-      xspeed+=0.01f;
-      break;
-    case GLUT_KEY_RIGHT:
-    	yspeed+=0.01f;
-      break;
-    case GLUT_KEY_LEFT:
-    	yspeed-=0.01f;
-    	break;
-    case GLUT_KEY_F1:
-    	glutFullScreen ();
-      break;
-    case GLUT_KEY_F2:
-    	glutReshapeWindow ( 500, 500 );
-      break;
-    default:
-      break;
-  }
+	Scene3D::MainScene().OnSpecialKey(a_keys, x, y); 
 }
 
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
@@ -95,15 +74,28 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
   glutInit            ( &argc, argv ); // Erm Just Write It =)
   glutInitDisplayMode ( GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA ); // Display Mode
-  glutInitWindowPosition (0,0);
 
-  int initialW = 720;
-  int initialH = 540;
-  glutInitWindowSize  ( initialW, initialH ); // If glutFullScreen wasn't called this is the window size
+  int initialW = 0, initialH = 0, x0 = 0, y0 = 0;
+
+  if (0 == 1)
+  {
+	  initialW = 800;
+	  initialH = (initialW*3)/4;
+  }
+  else
+  {
+		initialW = 480;
+		initialH = 320;
+		y0 = 480;
+  }
+
+  glutInitWindowSize  ( initialW, initialH ); // If glutFullScreen wasn't called this is the window size      
+  glutInitWindowPosition ( x0, y0 ); 
+
   Scene3D& scene = Scene3D::MainScene();
   // scene.SetViewPort(initialW, initialH);
 
-  glutCreateWindow    ( "Lab" ); // Window Title (argv[0] for current directory as title)
+  glutCreateWindow    ( "Lab" );               // Window Title (argv[0] for current directory as title)       
 
   scene.InitOpenGL();
 

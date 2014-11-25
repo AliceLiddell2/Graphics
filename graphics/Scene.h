@@ -5,10 +5,13 @@
 #include "graphics\IModel.h"
 #include "graphics\IScene.h"
 
-using namespace Eigen;
+#include "graphics\Model.h" // TODO: this is a temporary feature! 
+
+#define TEST_1 (true) 
 
 namespace MyGL
 {
+	/// Component SceneLighting: common lighting
 	/// Compoment BaseScene (abstract)
 	///    
 	class BaseScene : public IScene
@@ -21,7 +24,13 @@ namespace MyGL
 
 		double ratio;
 
+		bool enableLighting;
+
 	public:
+		BaseScene() : model(NULL), enableLighting(false) 
+		{
+		}
+
 		void SetModel(IModel* model) // final method 
 		{
 			this->model = model;
@@ -46,7 +55,7 @@ namespace MyGL
 		Vector3d upDirection;
 
 	public:
-		Scene3D() : upDirection(0, 0, 1), cameraLocation(-2,2,2)
+		Scene3D() : upDirection(0, 0, 1), cameraLocation(0, -12, 6)
 		{
 		}
 
@@ -55,22 +64,38 @@ namespace MyGL
 		void InitOpenGL()
 		{
 			LoadGLTextures();
-			glEnable(GL_TEXTURE_2D);
 			glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
-			glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
+			//
+			// back color 
+			//
+			Color backColor = model->Lighting()->BackColor();
+			double c_r = backColor.Red();
+			double c_g = backColor.Green();
+			double c_b = backColor.Blue();
+			glClearColor(0.5, 0.7, c_b, 1); // backColor.Alpha() 
+			//
+			// settings 
+			//
 			glClearDepth(1.0f);									// Depth Buffer Setup
 			glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
 			glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 			ShowCursor(FALSE);
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
+			//
+			glEnable(GL_NORMALIZE); 
+			//
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
+			//
+			// lights 
+			//
+			/*
 			glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
 			glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
 			glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);	// Position The Light
 			glEnable(GL_LIGHT1);								// Enable Light One
 
-			glColor4f(1.0f, 1.0f, 1.0f, 0.5);					// Full Brightness.  50% Alpha
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
+			*/
 		}
 
 		void SetViewPort(int W, int H) // final method 
@@ -78,9 +103,28 @@ namespace MyGL
 			RememberViewPort(W, H);
 		}
 
-		void StartDrawing()
+		void Lights(double k=1)
 		{
-			//
+			if (!enableLighting) return; 
+			// 
+			glEnable(GL_LIGHTING);
+			glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
+			glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
+			glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);		// Setup The Diffuse Light
+			glLightfv(GL_LIGHT0, GL_POSITION,LightPosition);	// Position The Light
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glEnable(GL_LIGHT0);								// Enable Light One
+			glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
+			glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
+			glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpecular);		// Setup The Diffuse Light
+			glLightfv(GL_LIGHT1, GL_POSITION,LightPosition1);	// Position The Light
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glEnable(GL_LIGHT1);								// Enable Light One
+			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+		}
+
+		inline void SetUpCamera(double k=1)
+		{
 			// ----
 			// Projection space
 			//
@@ -88,19 +132,23 @@ namespace MyGL
 			//
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
+			//
+			glScaled(1, k, 1);
 			//	
 			// Set the viewport to be the entire window
+			//
 			glViewport(0, 0, W, H);
 			//
 			// Set the clipping volume
 			//
-			gluPerspective(80, ratio, 1, 200);
+			gluPerspective(45, ratio, 1, 200);
 			//
 			// ----
 			// Model coordinate space
 			//
 			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
+			glLoadIdentity(); 
+			//
 			gluLookAt(cameraLocation[0], cameraLocation[1], cameraLocation[2],			// eye
 					  0, 0, 0,			// target
 					  upDirection[0], upDirection[1], upDirection[2]		// up direction 
@@ -111,27 +159,135 @@ namespace MyGL
 
 		void Display() // final method 
 		{
-			StartDrawing();
-			//
 			// Drawing objects
 			//
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			//
 			if (model)
 			{
-				model->Draw();
+				Model* theModel = static_cast<Model*>(model); 
+				//
+				DrawingContext ctx0;
+				ctx0.skipMirrors = true;
+				//
+				// Stencil
+				//
+				SetUpCamera();
+				//
+				Lights();
+				//
+				{
+					glEnable(GL_STENCIL_TEST); 
+					//
+					glColorMask(0, 0, 0, 0); 
+					glDisable(GL_DEPTH_TEST); 
+					glStencilFunc(GL_ALWAYS, 1, 1); 
+					glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+					//
+					glPushMatrix();
+					{
+						DrawingContext ctxLake;
+						theModel->Lake()->Draw(ctxLake);
+					}
+					glPopMatrix();
+					//
+					// Reflection
+					//
+					// StartDrawing();
+					glColorMask(1, 1, 1, 1); 
+					glEnable(GL_DEPTH_TEST); 
+					glStencilFunc(GL_EQUAL, 1, 1);
+					glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); 
+					//
+					// SetUpCamera(-1);
+					//
+					glPushMatrix();
+					{
+						glScaled(1, 1, -1);
+						//Lights(-1);
+						//
+						DrawingContext ctx1;
+						ctx0.Clone(ctx1);
+						ctx1.skipElementId = theModel->Ground()->id(); 
+						model->Draw(ctx1);
+						if (TEST_1) DrawTestCube(); 
+					}
+					glPopMatrix();
+					//
+					glDisable(GL_STENCIL_TEST); // Disable using the stencil buffer   
+				}
+				{
+					glEnable(GL_STENCIL_TEST); 
+					//
+					glColorMask(0, 0, 0, 0); 
+					glDisable(GL_DEPTH_TEST); 
+					glStencilFunc(GL_ALWAYS, 1, 1); 
+					glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+					//
+					glPushMatrix();
+					{
+						glBegin(GL_QUADS);
+						{
+							glVertex3d(-3.3, 5.7, 0);
+							glVertex3d( 3.3, 5.7, 0);
+							glVertex3d( 3.3, 5.7, 7.2);
+							glVertex3d(-3.3, 5.7, 7.2);
+						}
+						glEnd();
+					}
+					glPopMatrix();
+					//
+					// Portal 
+					//
+					// StartDrawing();
+					glColorMask(1, 1, 1, 1); 
+					glEnable(GL_DEPTH_TEST); 
+					glStencilFunc(GL_EQUAL, 1, 1);
+					glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); 
+					//
+					// SetUpCamera(-1);
+					//
+					glPushMatrix();
+					{
+						//glScaled(1, 1, -1);
+						//Lights(-1);
+						//
+						//DrawingContext ctx2;
+						//model2->Draw(ctx2);
+						if (TEST_1) DrawTestCube(); 
+					}
+					glPopMatrix();
+					//
+					glDisable(GL_STENCIL_TEST); // Disable using the stencil buffer   
+				}
+				//
+				//
+				// ----
+				// Main model 
+				//
+				// StartDrawing();
+				//
+				// SetUpCamera();
+				//
+				//ctx0.skipElementId = theModel->Lake()->id(); 
+				ctx0.skipMirrors = false;
+				model->Draw(ctx0); 
+				//if (TEST_1) DrawTestCube(); 
 			}
-			//
-			// ----
-			// Test
-			//
-			if (true)
-			{
+		}
+
+		inline void DrawTestCube()
+		{
+				glEnable(GL_TEXTURE_2D);
+				glColor3f(1.0f, 1.0f, 1.0f);
 				glPushMatrix();
-				//glTranslatef ( 0.0, 0.0, z );
+				glTranslated( 0, 9, 2  );
+
 				glRotatef ( xrot, 1.0, 0.0, 0.0 );
 				glRotatef ( yrot, 0.0, 1.0, 0.0 );
 
+				glColor4f(1.0f, 1.0f, 1.0f, 0.5);					// Full Brightness.  50% Alpha
+				glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
 
 				glBindTexture ( GL_TEXTURE_2D, texture_id[filter] );
 
@@ -168,10 +324,64 @@ namespace MyGL
 				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
 				glEnd();
 				glPopMatrix();
-			}
+				glDisable(GL_TEXTURE_2D);
 		}
 
+
+
+
+
+
+
+
+
+		// ========================================================================================================
+		// ***
 		// Interactivity
+
+		void OnSpecialKey(int a_keys, int x, int y)
+		{
+			switch ( a_keys ) 
+			{
+			case GLUT_KEY_UP:     // When Up Arrow Is Pressed...
+				xspeed-=0.01f;
+				break;
+			case GLUT_KEY_DOWN:               // When Down Arrow Is Pressed...
+				xspeed+=0.01f;
+				break;
+			case GLUT_KEY_RIGHT:
+				{
+					double a = (M_PI * 15) / 180;
+					Matrix3d R = Matrix3d::Identity();
+					R(0,0) = cos(a);
+					R(0,1) = -sin(a);
+					R(1,0) = sin(a);
+					R(1,1) = cos(a);
+					cameraLocation = R * cameraLocation; 
+					glutPostRedisplay();
+				}
+				break;
+			case GLUT_KEY_LEFT:
+				{
+					double a = -(M_PI * 15) / 180;
+					Matrix3d R = Matrix3d::Identity();
+					R(0,0) = cos(a);
+					R(0,1) = -sin(a);
+					R(1,0) = sin(a);
+					R(1,1) = cos(a);
+					cameraLocation = R * cameraLocation; 
+					glutPostRedisplay();
+				}
+				break;
+			case GLUT_KEY_F1:
+				glutFullScreen ();
+				break;
+			case GLUT_KEY_F2:
+				break;
+			default:
+				break;
+			}
+		}
 
 		void OnKeyPress(unsigned char key, int x, int y)
 		{
@@ -189,8 +399,8 @@ namespace MyGL
     	break;
     case 'l':
     	lp=TRUE;
-					light=!light;
-					if (!light)
+			enableLighting=!enableLighting;
+					if (!enableLighting)
 					{
 						glDisable(GL_LIGHTING);
 					}
@@ -216,16 +426,9 @@ namespace MyGL
 
 	case 'r':
 		{
-			double a = (M_PI * 15) / 180;
-			Matrix3d R = Matrix3d::Identity();
-			R(0,0) = cos(a);
-			R(0,1) = -sin(a);
-			R(1,0) = sin(a);
-			R(1,1) = cos(a);
+			yspeed+=0.01f;
 			//
-			cameraLocation = R * cameraLocation; 
 			//
-			glutPostRedisplay();
 			//
 			break;
 		}

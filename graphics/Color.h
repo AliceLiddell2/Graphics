@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "graphics/Common.h"
+#include "graphics\Common.h"
 
 #define NONTRANSPARENT_ALPHA (1)
 
@@ -10,7 +10,7 @@ namespace MyGL
 	class Color
 	{
 	protected:
-		Vector4d color;
+		Vector4d* color;
 
 	public:
 		explicit Color(
@@ -19,14 +19,22 @@ namespace MyGL
 			double blue, 
 			double alpha=NONTRANSPARENT_ALPHA
 			) 
-			: color(red, green, blue, alpha) 
+			// color(red, green, blue, alpha) 
 		{
+			color = new Vector4d();
+			(*color)[0] = red;
+			(*color)[1] = green;
+			(*color)[2] = blue;
+			(*color)[3] = alpha;
 		}
 
-		inline double Red() 	{ return color[0]; }
-		inline double Green() 	{ return color[1]; }
-		inline double Blue() 	{ return color[2]; }
+		inline double Red()		const 	{ return (*color)[0]; }
+		inline double Green()	const 	{ return (*color)[1]; }
+		inline double Blue()	const 	{ return (*color)[2]; }
+		inline double Alpha()	const 	{ return (*color)[3]; }
 
+		inline double& operator [](int j) { return (*color)[j]; }
+		inline const double& operator [](int j) const { return (*color)[j]; }
 		inline const Color& operator =(const Color& other)
 		{
 			color = other.color;
@@ -41,6 +49,13 @@ namespace MyGL
 		inline static Color White() 
 		{
 			return Color(1, 1, 1); 
+		}
+
+		inline void Output() const 
+		{
+			char s[1024];
+			sprintf(s, "color(%02f, %02f, %02f, %02f)", Red(), Green(), Blue(), Alpha());
+			cout << s << endl; 
 		}
 
 		// ----

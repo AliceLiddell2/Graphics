@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include "graphics/ElementBase.h"
-#include "graphics/Group.h"
+#include "graphics\Common.h"
+#include "graphics\ElementBase.h"
+#include "graphics\Group.h"
 
 using namespace std;
 
@@ -33,8 +34,13 @@ namespace MyGL
 			return *this;
 		}
 
-		void Draw() const // final
+		void Draw(DrawingContext& drwCtx0) const // final
 		{
+			DrawingContext drwCtx;
+			BeginDraw(drwCtx0, drwCtx);
+			//
+			ApplyColor(drwCtx.color); 
+			//
 			int n = size();
 			//		
 			for (int i = 0; i < n; i++)
@@ -53,6 +59,8 @@ namespace MyGL
 				}
 				glEnd();
 			}
+			//
+			EndDraw(); 
 		}
 	};
 

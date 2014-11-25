@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <tchar.h>
+#include <math.h>
+#include <time.h>
 
 // STL
 
@@ -35,3 +37,9 @@ using namespace Eigen;
 
 typedef Vector4d Plane; 
 
+// ----
+// infrastructure 
+
+#include "graphics/Exception.h"
+#include "graphics/Color.h"
+#include "graphics/Math.h"

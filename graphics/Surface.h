@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include "graphics/ElementBase.h"
-#include "graphics/Group.h"
+#include "graphics\Common.h"
+#include "graphics\ElementBase.h"
+#include "graphics\Group.h"
 
 using namespace std;
 

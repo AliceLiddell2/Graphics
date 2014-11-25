@@ -5,7 +5,7 @@
 #include "graphics/Group.h"
 
 // ===========================================================================================
-	// Primitives
+// Primitives
 
 #include "graphics/Box.h"
 #include "graphics/Sphere.h"
@@ -14,4 +14,8 @@
 #include "graphics/TriangleSet.h"
 #include "graphics/Surface.h"
 #include "graphics/SimplePlane.h"
+
+// Spectacular objects 
+
+#include "graphics/Fly.h" 
 

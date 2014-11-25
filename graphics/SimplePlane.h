@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "graphics\Common.h"
 #include "graphics\ElementBase.h"
 
 namespace MyGL
@@ -10,7 +11,7 @@ namespace MyGL
 	{
 		IElement* innerObject;
 
-		Plane plane;
+		Plane* plane;
 
 		SimplePlane() : innerObject(NULL)
 		{
@@ -19,20 +20,27 @@ namespace MyGL
 		SimplePlane(IElement* innerObject, const Plane& plane) 
 		{
 			this->innerObject = innerObject;	
-			this->plane = plane;
+			this->plane = new Plane(plane);
 		}
 
 		Plane ReflectionPlane() // final 
 		{
-			return plane;
+			return *plane;
 		}
 
-		void Draw() const // final 
+		void Draw(DrawingContext& drwCtx0) const // final 
 		{
-			BeginDraw();
+			DrawingContext drwCtx;
+			BeginDraw(drwCtx0, drwCtx);
+			//
+			ApplyColor(drwCtx.color); 
+			//
+			glNormal3d(0, 0, 1); 
 			//
 			if (innerObject) 
-				innerObject->Draw(); 
+			{
+				innerObject->Draw(drwCtx); 
+			}
 			//
 			EndDraw();
 		}

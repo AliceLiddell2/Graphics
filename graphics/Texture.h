@@ -1,10 +1,8 @@
 
 #pragma once
 
-#include <vector>
-
-#include "graphics/Common.h"
-#include "graphics/ImageLoader.h"
+#include "graphics\Common.h"
+#include "graphics\ImageLoader.h"
 
 namespace MyGL
 {

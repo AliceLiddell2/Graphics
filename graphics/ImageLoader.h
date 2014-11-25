@@ -4,7 +4,6 @@
 #include <fstream>
 
 #include "Common.h"
-#include "Exception.h"
 
 using namespace std;
 

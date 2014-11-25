@@ -15,9 +15,11 @@ float yspeed;			// Y Rotation Speed
 float ratio;
 float	z=-5.0f;			// Depth Into The Screen
 
-GLfloat LightAmbient[]=		{ 0.5f, 0.5f, 0.5f, 1.0f };
+GLfloat LightAmbient[]=		{ 0.7f, 0.7f, 0.7f, 1 };
 GLfloat LightDiffuse[]=		{ 1.0f, 1.0f, 1.0f, 1.0f };
-GLfloat LightPosition[]=	{ 0.0f, 0.0f, 2.0f, 1.0f };
+GLfloat LightSpecular[]=	{ 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat LightPosition[]=	{ -3.0f, -3.0f, 4.0f, 1.0f };
+GLfloat LightPosition1[]=	{ -1.0f, -4.0f, 4.0f, 1.0f };
 
 GLuint	filter;				// Which Filter To Use
 bool	light;				// Lighting ON/OFF

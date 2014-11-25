@@ -1,34 +1,38 @@
 
 #pragma once
 
-#include "graphics\Common.h"
-#include "graphics\ElementBase.h"
+#include "graphics/Common.h"
+#include "graphics/ElementBase.h"
 
-#define SPHERE_SLICES 12
-#define SPHERE_STACKS 12
+#define CYLINDER_SLICES 12
+#define CYLINDER_STACKS 12
 
 namespace MyGL
 {
-	struct Sphere : ElementBase 
+	struct Cylinder : ElementBase
 	{
 		// Vector3d center; // inherited from Movable 
-		double radius;
+		double baseR;
+		double topR;
+		double h;
 		int slices;
 		int stacks;
 
 		// Constructors 
 
-		Sphere(const Vector3d& center, double radius) 
+		Cylinder (const Vector3d& center, double baseR, double topR, double h) 
 		{
-			this->center() = center;
-			this->radius = radius;
-			this->slices = SPHERE_SLICES;
-			this->stacks = SPHERE_STACKS;
+			this->center = center;
+			this->h = h;
+			this->baseR = baseR;
+			this->topR = topR;
+			this->slices = CYLINDER_SLICES;
+			this->stacks = CYLINDER_STACKS;
 		}
 
 		// Drawing
 
-		void Draw(DrawingContext& drwCtx0) const 
+		void Draw(DrawingContext drwCtx0) const 
 		{
 			DrawingContext drwCtx;
 			BeginDraw(drwCtx0, drwCtx);
@@ -37,9 +41,9 @@ namespace MyGL
 			//
 			glPushMatrix();
 			//
-			glTranslated(center()[0], center()[1], center()[2]);
+			glTranslated(center[0], center[1], center[2]);
 			//
-			gluSphere(Quadric(), radius, slices, stacks);
+			gluCylinder(Quadric(), baseR, topR, h, slices, stacks);
 			//
 			glPopMatrix();
 			//

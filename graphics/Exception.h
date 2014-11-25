@@ -1,9 +1,6 @@
 
 #pragma once
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "graphics/Common.h"
 
 namespace MyGL
