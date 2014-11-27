@@ -2,7 +2,8 @@
 #pragma once
 
 #include "graphics/Common.h"
-#include "graphics/Disk.h"
+#include "graphics/Sphere.h"		// including the entire Elements.h is prohibited (!) 
+#include "graphics/WaterFlowerLeaf.h" 
 #include "graphics/Group.h"
 
 #define CYLINDER_SLICES 12
@@ -10,12 +11,11 @@
 
 namespace MyGL
 {
-	struct Fly : public Group 
+	struct WaterFlower : public Group 
 	{
-		double c_wing_s;
+		double radius;
 
 		double alpha;
-		double wings;
 
 		mutable double t;
 
@@ -23,6 +23,28 @@ namespace MyGL
 
 		inline void Construct() 
 		{
+			Vector3d p1 = Vector3d::Zero(); 
+			p1[2] = p1[2] + 0.5 * radius; // z-coordinate 
+			Sphere* ball = new Sphere(p1, radius); 
+			//
+			//char s[1024];
+			//sprintf(s, "color(%02f, %02f, %02f)", p1[0], p1[1], p1[2]);
+			//cout << s << endl; 
+			//
+			ball->SurfaceColor() = new Color(Color::LightGoldenrodYellow());
+			//
+			Add(ball, "sphere"); 
+			//
+			// leafs 
+			//
+			for (int k = 0; k < 4; k++)
+			{
+				IElement* leaf = new WaterFlowerLeaf(Vector3d::Zero(), 3*radius, 90); 
+				leaf->addToTransformation(Math::RotationMatrixZ(90*k));
+				Add(leaf); 
+			}
+			//
+			/*
 			// Constants 
 			c_wing_s = .56; 
 			double c_wing_s2 = .6 * c_wing_s; 
@@ -87,13 +109,13 @@ namespace MyGL
 			addToTransformation(Math::RotationMatrixZ(alpha)); 
 			addToTransformation(Math::RotationMatrixX(26)); 
 			//addToTransformation(Math::TranslationMatrix( center()[0],  center()[1],  center()[2]));
+			*/
 		}
 
-		Fly(const Vector3d& initialPos, double alpha) : t(0) 
+		WaterFlower(const Vector3d& initialPos, double radius) : t(0), alpha(0)   
 		{
 			this->center() = initialPos;
-			this->alpha = alpha;
-			this->wings = 0;
+			this->radius = radius;
 			//
 			Construct(); 
 		}
@@ -104,53 +126,18 @@ namespace MyGL
 		{
 			Move(dt);
 			//
-			double z = center()[2];
-			//
-			if (z < 0.3) 
-			{
-				(*_velocity)[2] = -velocity()[2];
-			}
-			else
-			{
-				double dx = 0.00003;
-				double dz = 0.1; 
-				double dA = 0.33;
-				//
-				// (*_velocity) += Math::RandomSphericalVector(.1); 
-				(*_velocity)[0] = dx * cos(M_PI * alpha / 180.0); 
-				(*_velocity)[1] = dx * sin(M_PI * alpha / 180.0); 
-				//
-				alpha += -dA + 2 * dA * Math::Random01(); 
-				//
-				z += -dz + 2 * dz * Math::Random01(); 
-			}
-			//
 			t += dt;
 			//
-			IElement* leftWing = GetChild("left wing");
-			IElement* rightWing = GetChild("right wing");
-			//
-			double beta = 36 * sin(.78 * (t / 1000.0)); 
-			//
-			leftWing->setTransformation(Math::RotationMatrixY(beta)); 
-			rightWing->setTransformation(Math::RotationMatrixY(-beta)); 
+			alpha = .1 * (t / 1000.0); 
 			//
 			setTransformation(Matrix4d::Identity());
 			addToTransformation(Math::RotationMatrixZ(alpha)); 
-			addToTransformation(Math::RotationMatrixX(26)); 
-		}
+		} 
 
 		// Drawing
 
 		// void Draw(DrawingContext drwCtx0) const // Inherited from Group! 
-		
-		// Properties 
 
-		// ---- 
-		// Static data 
-
-			//
-			//
 	};
 
 } // namespace MyGL

@@ -180,6 +180,16 @@ namespace MyGL
 			v[2] = r * z; 
 			return v; 
 		}
+		inline static Vector3d RandomPointInRectangle(double x0, double x1, double y0, double y1, double z0 = 0) 
+		{
+			Vector3d v;
+			double x = x0 + (x1-x0) * Random01(); 
+			double y = y0 + (y1-y0) * Random01(); 
+			v[0] = x; 
+			v[1] = y; 
+			v[2] = z0; 
+			return v; 
+		}
 	};
 
 } // namespace MyGL

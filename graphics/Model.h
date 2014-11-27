@@ -174,6 +174,16 @@ namespace MyGL
 				//
 				// Water flowers
 				{
+					double radius = .36;
+					double gap = 1.5; 
+					double x0 = -lakeW + gap;
+					double x1 =  lakeW - gap;
+					double y0 = -lakeY + gap + gateShift;
+					double y1 =   -b/2 - gap + gateShift;
+					for (int k = 0; k < 5; k++) 
+					{
+						group->Add(new WaterFlower(Math::RandomPointInRectangle(x0,x1,y0,y1,0), radius)); 
+					}
 				}
 				//
 				// Flies

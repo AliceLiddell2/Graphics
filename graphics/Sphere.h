@@ -35,13 +35,13 @@ namespace MyGL
 			//
 			ApplyColor(drwCtx.color); 
 			//
-			glPushMatrix();
+			// glPushMatrix();
 			//
-			glTranslated(center()[0], center()[1], center()[2]);
+			// glTranslated(center()[0], center()[1], center()[2]);
 			//
 			gluSphere(Quadric(), radius, slices, stacks);
 			//
-			glPopMatrix();
+			// glPopMatrix();
 			//
 			EndDraw(); 
 		}

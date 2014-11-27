@@ -66,6 +66,26 @@ namespace MyGL
 			return Color(210.0/255, 105.0/255, 30.0/255); 
 		}
 
+		inline static Color LightGoldenrodYellow() 
+		{
+			return Color(250.0/255, 250.0/255, 210.0/255); 
+		}
+		inline static Color SpringGreen() 
+		{
+			return Color(0.0/255, 255.0/255, 127.0/255); 
+		}
+		inline static Color PaleGreen() 
+		{
+			return Color(152.0/255, 251.0/255, 152.0/255); 
+		}
+		inline static Color MidnightBlue() 
+		{
+			return Color(25.0/255, 25.0/255, 112.0/255); 
+		}
+		inline static Color SeaGreen()
+		{
+			return Color(46.0/255, 139.0/255, 87.0/255); 
+		}
 		// ----
 		// Shading tecniques
 
