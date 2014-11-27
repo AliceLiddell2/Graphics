@@ -39,7 +39,27 @@ namespace MyGL
 			DrawingContext drwCtx;
 			BeginDraw(drwCtx0, drwCtx);
 			//
-			ApplyColor(drwCtx.color); 
+			GLuint texId = drwCtx.textureId; 
+			bool b = (texId != NO_TEXTURE); 
+			//
+			if (b)
+			{
+				glDisable(GL_COLOR_MATERIAL); 
+				//
+				glEnable(GL_TEXTURE_2D);
+				//glColor4f(1.0f, 1.0f, 1.0f, 0.5);					// Full Brightness  (50% Alpha)
+				//glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
+				//
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glColor3f(1, 1, 1); 
+				//
+				glBindTexture(GL_TEXTURE_2D, texId); 
+			}
+			else
+			{
+				ApplyColor(drwCtx.color); 
+			}
 			//
 			int n = size();
 			//		
@@ -52,12 +72,24 @@ namespace MyGL
 				//
 				glBegin(GL_QUADS);
 				{
-					glVertex3d(v0[0], v0[1], v0[2]);
-					glVertex3d(v1[0], v1[1], v1[2]);
-					glVertex3d(v2[0], v2[1], v2[2]);
-					glVertex3d(v3[0], v3[1], v3[2]);
+					double m = const_cast<QuadSet*>(this)->TextureMag(); 
+					//
+					double x0 = v0[0] / m; 
+					double x1 = v2[0] / m; 
+					double y0 = v0[1] / m; 
+					double y1 = v2[1] / m; 
+					//
+					if (b) glTexCoord2f(x0, y0);		glVertex3d(v0[0], v0[1], v0[2]);
+					if (b) glTexCoord2f(x1, y0);		glVertex3d(v1[0], v1[1], v1[2]);
+					if (b) glTexCoord2f(x1, y1);		glVertex3d(v2[0], v2[1], v2[2]);
+					if (b) glTexCoord2f(x0, y1);		glVertex3d(v3[0], v3[1], v3[2]);
 				}
 				glEnd();
+			}
+			//
+			if (b)
+			{
+				glDisable(GL_TEXTURE_2D);
 			}
 			//
 			EndDraw(); 

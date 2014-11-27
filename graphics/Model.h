@@ -63,7 +63,8 @@ namespace MyGL
 				double h = 7.2;
 				double lakeW = 20;
 				double lakeY = 16;
-				double gateY = 4.8;
+				//
+				double gateShift = 12;
 				//
 				// ---
 				// Lighting 
@@ -80,7 +81,10 @@ namespace MyGL
 					double z0 = -0.1;
 					Vector3d v0(-100,-100,z0), v1(100,-100,z0), v2(100,100,z0), v3(-100,100,z0);
 					Vector3d v4(-lakeW,-100,z0), v5(-lakeW,100,z0), v6(lakeW,-100,z0), v7(lakeW,100,z0);
-					Vector3d v8(-lakeW,gateY-lakeY,z0), v9(lakeW,gateY-lakeY,z0), v10(lakeW,gateY,z0), v11(-lakeW,gateY,z0);
+					Vector3d v8(-lakeW, gateShift-b/2-lakeY, z0), 
+							 v9(lakeW, gateShift-b/2-lakeY, z0), 
+							 v10(lakeW, gateShift-b/2, z0), 
+							 v11(-lakeW, gateShift-b/2, z0);
 					//
 					// Disk* disk = new Disk(, plane);
 					QuadSet* set1 = new QuadSet();
@@ -92,8 +96,16 @@ namespace MyGL
 					//
 					ground->SurfaceColor() = new Color(0, 0.5, 0);
 					//
+					ground->BindTexture("Texture\\Surface\\grass2.bmp");
+					ground->TextureMag() = 4;
+					//
 					group->Add(ground, "ground");
 				}
+				//
+				// ----
+				// Lake and gate group
+				//
+				Group* gg = new Group();
 				//
 				// Gate
 				{
@@ -106,10 +118,11 @@ namespace MyGL
 					gate->Add(box1).Add(box2).Add(box3);
 					//
 					gate->SurfaceColor() = new Color(0.5, 0, 0);
+					gate->BindTexture("stone-wall-1_512.bmp"); 
+					gate->BindTexture("Texture\\Gate\\in_wood.bmp"); 
+					//gate->BindTexture("Texture\\Wood\\wood.bmp"); 
 					//
-					gate->setTransformation(Math::TranslationMatrix(0, gateY, 0)); 
-					//
-					group->Add(gate); 
+					gg->Add(gate); 
 				}
 				//
 				// Lake
@@ -117,7 +130,10 @@ namespace MyGL
 					Plane plane(0,0,1,0);
 					//
 					double z0 = 0;
-					Vector3d v0(-20,-16,z0), v1(20,-16,z0), v2(20,-b/2,z0), v3(-20,-b/2,z0);
+					Vector3d		v0(-lakeW, -lakeY, z0), 
+									v1( lakeW, -lakeY, z0), 
+									v2( lakeW, -b/2,   z0), 
+									v3(-lakeW, -b/2,   z0);
 					//
 					// Disk* disk = new Disk(, plane);
 					QuadSet* set1 = new QuadSet();
@@ -127,10 +143,34 @@ namespace MyGL
 					lake->SurfaceColor() = new Color(0, 0, 1, .5);
 					lake->IsAMirror() = true;
 					//
-					lake->addToTransformation(Math::TranslationMatrix(0, gateY, 0)); 
-					//
-					group->Add(lake, "lake");
+					gg->Add(lake, "lake");
 				}
+				{
+					double dh = .5;
+					double w = 1;
+
+					Box* box1 = new Box(Vector3d(-lakeW-w, -lakeY-w, 0), Vector3d(w, lakeY+w, dh), true);
+					Box* box2 = new Box(Vector3d( lakeW, -lakeY-w, 0), Vector3d(w, lakeY+w, dh), true);
+					Box* box3 = new Box(Vector3d(-lakeW-w, -lakeY-w, 0), Vector3d(2*(lakeW+w), w, dh), true);
+					Box* box4 = new Box(Vector3d(-lakeW-w, -b/2, 0), Vector3d(lakeW+w-a, w, dh), true);
+					Box* box5 = new Box(Vector3d( a, -b/2, 0), Vector3d(lakeW+w-a, w, dh), true);
+					//
+					Group* edges = new Group();
+					edges->Add(box1).Add(box2).Add(box3).Add(box4).Add(box5);    
+					//
+					// edges->SurfaceColor() = new Color(0.5, 0, 0);
+					edges->BindTexture("stone-wall-1_512.bmp"); 
+					//
+					gg->Add(edges); 
+				}
+				//
+				gg->setTransformation(Math::TranslationMatrix(0, gateShift, 0)); 
+				group->Add(gg, "gate group"); 
+				//
+				//
+				//
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// Small objects
 				//
 				// Water flowers
 				{
@@ -140,18 +180,36 @@ namespace MyGL
 				{
 					for (int k = 0; k < 3; k++)
 					{
-						Vector3d c1 = Math::RandomDiskVector(12);
-						c1[1] = c1[1] + 3;
-						c1[2] = 3.6; // z-coordinate 
+						Vector3d c1 = Math::RandomDiskVector(6);
+						c1[0] = c1[0] + 0;
+						c1[1] = c1[1] + gateShift / 2 - 3;
+						c1[2] = 2.7; // z-coordinate 
 						group->Add(new Fly(c1, Math::RandomAngle())); 
 					}
+				}
+				// Table
+				{
+					Plane plane(0,0,1,0);
+					double z0 = 0.1;
+					Vector3d v0(-8,-8,z0), v1(8,-8,z0), v2(8,b,z0), v3(-8,b,z0);
+					//
+					QuadSet* set1 = new QuadSet();
+					set1->Add(v0, v1, v2, v3);
+					SimplePlane* table = new SimplePlane(set1, plane);
+					table->SurfaceColor() = new Color(0, 0, 0);
+					table->addToTransformation(Math::TranslationMatrix(-20, gateShift-25, 0)); 
+					//
+					group->Add(table, "table");
+
+					
 				}
 			}
 		}
 
-		inline IElement* Lake() const 
+		inline IElement* Lake(Matrix4d* transform) const 
 		{
-			return group->GetChild("lake"); 
+			if (transform) *transform = group->GetChild("gate group")->getTransformation(); 
+			return static_cast<Group*>(group->GetChild("gate group"))->GetChild("lake"); 
 		}
 
 		inline IElement* Ground() const 
@@ -160,6 +218,18 @@ namespace MyGL
 		}
 
 
+
+
+
+
+
+		void Act(double dt) // final 
+		{
+			if (group)
+			{
+				group->Act(dt); 
+			}
+		}
 
 
 

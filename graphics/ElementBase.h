@@ -58,6 +58,8 @@ namespace MyGL
 
 		Texture* texture;
 
+		double textureMag; 
+
 		// Material 
 
 		double front_mat_shininess[1]; // = {60.0f};
@@ -78,6 +80,7 @@ namespace MyGL
 			polygonMode(GL_FILL), 
 			color(NULL), 
 			texture(NULL), 
+			textureMag(1), 
 			//
 			// transformations
 			applyTransform(false), 
@@ -100,9 +103,22 @@ namespace MyGL
 
 		virtual bool& IsAMirror() { return isAMirror; } 
 
-		virtual Plane ReflectionPlane() const { ThrowException("Reflection plane is undefined for this object"); } 
+		bool TextureIsBound() const { return texture != NULL; } 
 
-		virtual void Act(double dt) const  {} // default empty stub (must be overriden to create new behaviour) 
+		virtual void BindTexture(const string& name) // final 
+		{
+			texture = &( Texture::GetTexture(name) ); 
+			// never not call this to postpone texture generation! // return texture->TextureId(); 
+		}
+
+		inline double& TextureMag() // final
+		{
+			return textureMag; 
+		}
+
+		virtual Plane ReflectionPlane() const { ThrowException("Reflection plane is undefined for this object"); }   
+
+		virtual void Act(double dt)  {} // default empty stub (must be overriden to create new behaviour) 
 
 		void Move(double dt) const 
 		{
@@ -122,7 +138,7 @@ namespace MyGL
 		// -------------------------------------------------------------------------------------
 		// Geometry and drawing
 
-		virtual void setTransformation(const Matrix4d& m) const // final 
+		void setTransformation(const Matrix4d& m) const // final 
 		{
 			applyTransform = true; 
 			if (!transformation)
@@ -135,7 +151,7 @@ namespace MyGL
 			}
 		}
 
-		virtual void addToTransformation(const Matrix4d& m) const // final 
+		void addToTransformation(const Matrix4d& m) const // final 
 		{
 			applyTransform = true; 
 			if (!transformation)
@@ -148,15 +164,30 @@ namespace MyGL
 			}
 		}
 
+		Matrix4d getTransformation() const // final 
+		{
+			if (transformation)
+			{
+				return *transformation; 
+			}
+			else
+			{
+				return Matrix4d::Identity(); 
+			}
+		}
+
 	protected:
 		inline void BeginDraw(DrawingContext& parentCtx, DrawingContext& drwCtx) const
 		{
 			parentCtx.Clone(drwCtx);
 			UpdateDrawingContext(drwCtx);
 			//
+			glPushMatrix();
+			//
+			glTranslated(center()[0], center()[1], center()[2]);
+			//
 			if (applyTransform && transformation)
 			{
-				glPushMatrix();
 				double* m = transformation->data(); 
 				glMultMatrixd(m);
 			}
@@ -176,10 +207,11 @@ namespace MyGL
 
 		inline void EndDraw() const
 		{
-			if (applyTransform && transformation) 
-			{
-				glPopMatrix();
-			}
+			//if (applyTransform && transformation) 
+			//{
+			//}
+			//
+			glPopMatrix();
 			//
 			if (color) 
 			{
@@ -199,6 +231,10 @@ namespace MyGL
 			if (SurfaceColor())
 			{
 				drwCtx.color = new Color(*SurfaceColor());
+			}
+			if (TextureIsBound())
+			{
+				drwCtx.textureId = texture->TextureId(); 
 			}
 		}
 

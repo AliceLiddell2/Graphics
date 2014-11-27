@@ -13,7 +13,7 @@ namespace MyGL
 
 	private:
 		ElementContainer elements;
-		ElementSearchT elementSearch;
+		mutable ElementSearchT elementSearch;
 
 	public:
 		// content
@@ -43,9 +43,9 @@ namespace MyGL
 			DrawingContext drwCtx;
 			BeginDraw(drwCtx0, drwCtx);
 			//
-			glPushMatrix();
+			// glPushMatrix();
 			//
-			glTranslated(center()[0], center()[1], center()[2]); 
+			// glTranslated(center()[0], center()[1], center()[2]); // ElementBase already does that 
 			//
 			for (ElementContainer::const_iterator it = elements.begin(); it != elements.end(); ++it)   
 			{
@@ -74,11 +74,22 @@ namespace MyGL
 				}
 			}
 			//
-			glPopMatrix();
+			// glPopMatrix();
 			//
 			EndDraw(); 
 		}
 
+		void Act(double dt) //const // final 
+		{
+			for (ElementContainer::const_iterator it = elements.begin(); it != elements.end(); ++it)   
+			{
+				IElement* element = *it; 
+				if (element) 
+				{
+					element->Act(dt);
+				}
+			}
+		}
 		// Constructors, destructors
 
 		~Group() 

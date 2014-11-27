@@ -47,6 +47,21 @@ namespace MyGL
 			return m;
 		}
 
+		inline static Matrix4d ScaleMatrix(double Mx, double My, double Mz) 
+		{
+			Matrix4d m = Matrix4d::Identity(); 
+			m(0,0) = Mx;
+			m(1,1) = My;
+			m(2,2) = Mz;
+			// std::cout << "Here is the matrix m:\n" << m << std::endl;
+			return m;
+		}
+
+		inline static Matrix4d ScaleMatrix(double M) 
+		{
+			return ScaleMatrix(M, M, M);
+		}
+
 		inline static Matrix4d TranslationMatrix(const Vector3d& t) 
 		{
 			Matrix4d m = Matrix4d::Identity(); 
@@ -123,7 +138,7 @@ namespace MyGL
 
 		inline static double RandomAngleDgr()
 		{
-			double a = Random01() * 2 * M_PI; 
+			double a = Random01() * 360; 
 			return a; 
 		}
 

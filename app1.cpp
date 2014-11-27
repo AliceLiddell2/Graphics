@@ -41,6 +41,11 @@ void reshape( int w, int h )
 	scene.SetViewPort(w, h);
 }
 
+void idlefunc(void)
+{
+	Scene3D::MainScene().OnIdle(); 
+	glutPostRedisplay(); 
+}
 void display(void)
 {
 	Scene3D::MainScene().Display();
@@ -77,7 +82,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
   int initialW = 0, initialH = 0, x0 = 0, y0 = 0;
 
-  if (0 == 1)
+  if (1 == 1)
   {
 	  initialW = 800;
 	  initialH = (initialW*3)/4;
@@ -108,7 +113,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
   glutReshapeFunc     ( reshape );
   glutKeyboardFunc    ( keyboard );
   glutSpecialFunc     ( arrow_keys );
-  glutIdleFunc		  ( display );
+  glutIdleFunc		  ( idlefunc );
   glutMainLoop        ( );          // Initialize The Main Loop
 }
 

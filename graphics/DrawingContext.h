@@ -3,8 +3,6 @@
 
 #include "graphics\Common.h"
 
-#define NO_TEXTURE (-1)
-
 namespace MyGL
 {
 	/// Structure keeping object attributes for hierarchial drawing 

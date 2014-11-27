@@ -41,13 +41,11 @@ namespace MyGL
 			//
 			ApplyColor(drwCtx.color); 
 			//
-			glPushMatrix();
-			//
-			glTranslated(center()[0], center()[1], center()[2]);
+			// glPushMatrix();
 			//
 			gluDisk(Quadric(), innerR, outerR, slices, stacks);
 			//
-			glPopMatrix();
+			// glPopMatrix();
 			//
 			EndDraw(); 
 		}

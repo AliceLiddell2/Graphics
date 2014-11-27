@@ -19,6 +19,7 @@
 
 // OpenGL
 
+#include <gl\glew.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
 #include <gl\glut.h>
@@ -36,6 +37,8 @@ using namespace Eigen;
 // Common math definitions
 
 typedef Vector4d Plane; 
+
+#define NO_TEXTURE (0) // ! VERY IMPORTANT !   texture ids are eventually unsigned, i.e. textureId >= 0 
 
 // ----
 // infrastructure 

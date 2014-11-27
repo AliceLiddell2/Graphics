@@ -58,6 +58,14 @@ namespace MyGL
 			cout << s << endl; 
 		}
 
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		// Colors 
+
+		inline static Color Chocolate() 
+		{
+			return Color(210.0/255, 105.0/255, 30.0/255); 
+		}
+
 		// ----
 		// Shading tecniques
 

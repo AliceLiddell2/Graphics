@@ -9,24 +9,49 @@ namespace MyGL
 	class Texture 
 	{
 	private:
-		Image* image;
-
 		string path;
 
-		GLuint textureId;
+		mutable Image* image;
 
-		Texture(const string& filename) : image(NULL), textureId(0), path(filename) 
+		mutable GLuint textureId;
+
+		inline void CreateTexture() const 
 		{
-			image = Image::loadBMP((const char*)filename.c_str()); 
-			if (!image) ThrowException("image == 0"); 
+			if (textureId > 0) return;
 			//
+			image = Image::loadBMP((const char*)path.c_str()); 
+			if (!image) 
+				ThrowException("image == 0"); 
+			//
+			glEnable(GL_TEXTURE);
+			glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
 			glGenTextures ( 1, &textureId );
 			glBindTexture ( GL_TEXTURE_2D, textureId );
+			//
+			glTexImage2D(GL_TEXTURE_2D, 
+				0, 
+				GL_RGB, 
+				image->width, image->height, 
+				0, 
+				GL_BGR, 
+				GL_UNSIGNED_BYTE, 
+				image->pixels);
+			//
+			glDisable(GL_TEXTURE);
+
 		}
+
+		Texture(const string& filename) : image(NULL), textureId(NO_TEXTURE), path(filename) 
+		{
+			textureId = NO_TEXTURE; 
+		}
+
 	public:
 		GLuint TextureId() const 
 		{
-			if (!textureId) ThrowException(string("Texture is not bound: ") + path);
+			CreateTexture();
+			//
+			if (textureId == NO_TEXTURE) ThrowException(string("Texture is not bound: ") + path);
 			//
 			return textureId;
 		}
@@ -44,7 +69,7 @@ namespace MyGL
 		}
 
 	public:
-		Texture& GetTexture(const string& filename) 
+		inline static Texture& GetTexture(const string& filename) 
 		{
 			TextureContainerT::iterator i = TextureContainer().find(filename);
 			if (i != TextureContainer().end())
